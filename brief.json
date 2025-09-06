@@ -1,0 +1,304 @@
+{
+  "name": "brief",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-nano",
+          "mode": "list",
+          "cachedResultName": "gpt-5-nano"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        192
+      ],
+      "id": "6db1b4b3-dd35-4c66-a191-8522c0c6f5c1",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "VBxuF0b2a8jeAnz4",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "brief",
+          "mode": "list",
+          "cachedResultName": "brief"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('id', ``, 'string') }}",
+            "created_at": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('created_at', ``, 'string') }}",
+            "brief_json": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('brief_json', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "brief_json",
+              "displayName": "brief_json",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        80,
+        400
+      ],
+      "id": "cbd8d812-7db2-4bee-be87-49c138141297",
+      "name": "postgresInsertCampaignBrief",
+      "credentials": {
+        "postgres": {
+          "id": "PBDnoOrLMM2nFE72",
+          "name": "n8n_hackathon"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<user message>{{ $json.message.text }}</user message>",
+        "options": {
+          "systemMessage": "=<AgentInstructions>\n    <Role>\n        <name>InquiryAgent</name>\n        <description>Creates a structured campaign brief from simple user answers.</description>\n    </Role>\n  \n    <Goal>\n        <Primary>Create a structured campaign brief following the template from simple answers provided by the user.</Primary>\n    </Goal>\n  \n    <Instructions>\n        <Instruction>Speak kindly as an experienced account director from a global network agency.</Instruction>\n        <Instruction>Use only Telegram-allowed symbols in your responses.</Instruction>\n        <Instruction>Do not repeat the previous answer immediately every time, only after the last question if needed.</Instruction>\n        <Instruction>The user must provide Product Name and a brief Description.</Instruction>\n        <Instruction>If the user’s answer is missing data, do not ask again; instead, suggest best-guess defaults when building the campaign brief (mark them clearly during confirmation).</Instruction>\n        <Instruction>Follow the 'campaignBriefTemplate' format. Ask concise, helpful questions and provide relevant suggestions/examples.</Instruction>\n        <Instruction>Complete the inquiry in three questions: (1) Product Name and Description. (2) Target Audience and Geo. (3) Campaign Goal and Target Action.</Instruction>\n        <Instruction>When all parameters are gathered (including defaults), summarize the full brief and ask for confirmation before saving.</Instruction>\n        <Instruction>Only after confirmation, use the crypto tool postgres tool to insert the campaign brief.</Instruction>\n        <Instruction>Never offer to change the brief after saving it to postgres.</Instruction>\n    </Instructions>\n\n    <campaignBriefTemplate>\n    {\n        \"product_name\": \"Mandatory: Clear name for the product or service.\",\n        \"product_description\": \"Mandatory: A short overview of the product’s purpose, how it works, and its context in the market.\",\n        \"target_audience\": \"Optional: Key demographics, psychographics, and behaviors.\",\n        \"target_geo\": \"Mandatory: Geographic targeting details (countries, regions, cities, or areas).\",\n        \"campaign_goal\": \"Mandatory: The primary objective (e.g., awareness, lead generation, sales). Defaults to sales conversion if missing.\",\n        \"target_action\": \"Mandatory: The specific customer action (e.g., purchase, sign up). Defaults based on funnel if missing.\"\n    }\n    </campaignBriefTemplate>\n</AgentInstructions>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -128,
+        -32
+      ],
+      "id": "4b82cfcd-a367-4e6f-ae65-07869c58639e",
+      "name": "InquiryAgent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Generate uuid",
+        "action": "generate",
+        "dataPropertyName": "id"
+      },
+      "type": "n8n-nodes-base.cryptoTool",
+      "typeVersion": 1,
+      "position": [
+        176,
+        320
+      ],
+      "id": "a7f5b09c-10a1-42ca-84c8-ef0ee0826296",
+      "name": "Crypto"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "123456789"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        272
+      ],
+      "id": "f225f73f-2886-4b1a-b335-c1075fc4df1d",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -480,
+        -32
+      ],
+      "id": "dd2fa543-745b-4f5b-ba72-6db8878353cc",
+      "name": "Telegram Trigger",
+      "webhookId": "2dd64554-b3f1-4115-aece-3a09e3d53952",
+      "credentials": {
+        "telegramApi": {
+          "id": "gOv1Cmlv1mfEPPZF",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        -32
+      ],
+      "id": "f205ba69-ffe1-4a4e-8bff-64aec0b2e36f",
+      "name": "Send a text message",
+      "webhookId": "cbc142b8-7ed5-4bd2-80fd-56abed831952",
+      "credentials": {
+        "telegramApi": {
+          "id": "gOv1Cmlv1mfEPPZF",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": 661057665,
+          "message": {
+            "message_id": 9,
+            "from": {
+              "id": 2108787329,
+              "is_bot": false,
+              "first_name": "E",
+              "last_name": "S",
+              "username": "emilskr",
+              "language_code": "en"
+            },
+            "chat": {
+              "id": 2108787329,
+              "first_name": "E",
+              "last_name": "S",
+              "username": "emilskr",
+              "type": "private"
+            },
+            "date": 1757169559,
+            "text": "coca cola"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "InquiryAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "postgresInsertCampaignBrief": {
+      "ai_tool": [
+        [
+          {
+            "node": "InquiryAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crypto": {
+      "ai_tool": [
+        [
+          {
+            "node": "InquiryAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InquiryAgent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "InquiryAgent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "InquiryAgent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8d0d0f6e-ae50-4681-bd19-510f61bda850",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5a15598c4f70350a1350177d0fd97851d36eed95d8f2203733d7cde20d36947b"
+  },
+  "id": "V7STEVanNUbNuP6w",
+  "tags": []
+}

@@ -1,0 +1,409 @@
+{
+  "name": "img-gen",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "={{ $('Start FLUX Generation Job').item.json.polling_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2240,
+        -240
+      ],
+      "id": "fce5633f-6d90-4b23-bd30-6dc6d7c6bd31",
+      "name": "Do the Polling",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "j1I1QPRGwIbcuONS",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d35ae158-063c-49e6-a13b-3c7fe086534f",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "=Ready",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2032,
+        -240
+      ],
+      "id": "11114809-3d1b-4d29-8816-9b4dfbd29e4f",
+      "name": "Is it ready?"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -2016,
+        0
+      ],
+      "id": "63183ac8-02a5-431f-935e-8029eec279a9",
+      "name": "Wait",
+      "webhookId": "44a0e8b7-2632-4e14-9083-11450bdbf604"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.bfl.ai/v1/flux-dev",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ JSON.stringify($('When Executed by Another Workflow').item.json.output) }}"
+            },
+            {
+              "name": "aspect_ratio",
+              "value": "1:1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2512,
+        -240
+      ],
+      "id": "0b328221-007a-4f86-9d1a-00615016e713",
+      "name": "Start FLUX Generation Job",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "QDUtBpIFWWfbYiBr",
+          "name": "bfl"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Start a Black Forst Lab Job\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n^--- Here you can customize Parameters and Model",
+        "height": 432,
+        "width": 272
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2592,
+        -352
+      ],
+      "typeVersion": 1,
+      "id": "b112763b-b278-4f33-b8cb-c3fc97118943",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Choose your Input\n\nForm is simple.\nYou can also use Webhook to connect to any Frontend",
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2896,
+        -384
+      ],
+      "typeVersion": 1,
+      "id": "3a04e591-e477-4333-bfcf-d29ad653b853",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## The Result comes Asynchronous\n\n\n\n\n\n\n\n\n\nYou can leave this block. we essentially are checking back every 1second if the image is done",
+        "height": 288,
+        "width": 352,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2224,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "91e36880-5ec2-4674-96e0-ef6997d4bda3",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2864,
+        -192
+      ],
+      "id": "3aa6f8fa-d2c2-4d98-95be-fadeaf332b43",
+      "name": "When chat message received",
+      "webhookId": "2b1a5f93-dcee-4c5e-88b4-413dc951ef11"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.result.sample }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1792,
+        -336
+      ],
+      "id": "8167eee1-9c9e-4f2c-b059-ca8fd07d91e6",
+      "name": "Get Result1"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "2108787329",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1584,
+        -336
+      ],
+      "id": "0a89af01-e59c-40a3-85eb-83fc81163d90",
+      "name": "Send a photo message",
+      "webhookId": "5dd61897-15c3-4f0e-b883-b14b34b23b08",
+      "credentials": {
+        "telegramApi": {
+          "id": "gOv1Cmlv1mfEPPZF",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -2880,
+        480
+      ],
+      "id": "56c224cd-d402-49a9-a174-335a4175c9c7",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "output": {
+            "meta": {
+              "version": "1.0",
+              "engine": "FLUX",
+              "language": "en",
+              "length_hint": "short"
+            },
+            "use_case": "generic",
+            "priority_order": [
+              "subject",
+              "action",
+              "style",
+              "context",
+              "visual_layer",
+              "technical_layer",
+              "atmospheric_layer",
+              "text_integration"
+            ],
+            "foundation": {
+              "subject": "Noah — a 22–26 nightlife creator and micro-influencer in streetwear, trying on Ray‑Ban sunglasses in a flagship Berlin store at night; the sunglasses (distinct frame silhouette and reflective lenses) are the clear focal point, with Noah's eyes visible and unobstructed.",
+              "action": "Immediate VIP action: Noah lifts the frames to his face while checking a phone confirmation for a same-night VIP try-on; a store associate gestures to a limited-drop case, conveying exclusivity and instant access.",
+              "style": "Energetic, editorial nightlife aesthetic with bold reflections and clean product detail; UGC/photo-ready framing that feels aspirational, exclusive, and content-first.",
+              "context": "After-hours flagship environment (Mitte/Kreuzberg) targeting creators who need late access and photogenic frames; creative emphasizes quick booking, photogenic lenses, and exclusive access to counter store-hour and stock concerns."
+            },
+            "visual_layer": {
+              "lighting": "Moody editorial lighting: warm spotlight on frames to accent metal and lens reflections, neon cyan and magenta rim lights to create striking reflections, soft fill to keep eyes clear and skin tones balanced.",
+              "color_palette": "Deep midnight blacks and navy, neon cyan and magenta accents, Ray‑Ban red for microcopy and CTA highlights, warm amber/bronze tones in lenses.",
+              "composition": "Square crop with tight portrait framing: sunglasses centered lower-third; Noah's face offset right; phone booking visible lower-right; negative space upper-left for subtle VIP badge and store signage.",
+              "camera_angle": "Slightly low eye-level (~5–10°) close-up to emphasize frame silhouette and reflections while keeping Noah’s expression and phone readable—optimized for social feed thumbnails.",
+              "background_elements": "Blurry store shelving with curated frames, subtle neon 'Ray‑Ban' sign, a photographer silhouette and a vinyl sleeve to suggest nightlife culture; no clutter or price tags."
+            },
+            "technical_layer": {
+              "camera": {
+                "focal_length_mm": "85",
+                "aperture_f": "1.8",
+                "shutter_speed_s": "1/125",
+                "iso": "1600",
+                "lens_type": "85mm portrait prime (creamy bokeh, flattering compression)"
+              },
+              "quality_markers": [
+                "high detail",
+                "cinematic"
+              ]
+            },
+            "atmospheric_layer": {
+              "mood": "Confident, exclusive, and energized — a content-ready moment that promises social cachet and fast access.",
+              "narrative": "Noah drops by after a gig to secure photogenic Ray‑Ban frames via an instant VIP booking. Visible confirmation on the phone, reflective lenses, and a limited-drop display resolve his pain points (hours, stock, photo readiness), prompting an urgent store visit."
+            },
+            "text_integration": {
+              "enabled": true,
+              "quoted_text": "Book VIP Try‑On Now",
+              "placement": "Lower-center semi-opaque rounded band across the mirror/sunglasses area (does not obscure eyes); a smaller rounded badge near the phone repeats 'VIP Try‑On' and 'After-Hours' microcopy.",
+              "typography": "Bold geometric sans (Inter / Helvetica Neue). Primary CTA uppercase white on Ray‑Ban red rounded band; secondary badges medium weight white on translucent dark chips; optimized for mobile legibility.",
+              "relation_to_scene": "CTA band anchors visually to the mirror and frames without covering eyes; phone-adjacent badge reinforces immediacy and easy booking, reducing friction around store hours and availability."
+            },
+            "constraints": {
+              "positive_rewrites": [
+                "clear, unobstructed eyes",
+                "exclusive access"
+              ],
+              "avoid_terms": [
+                "cheap",
+                "low-quality",
+                "knockoff",
+                "sold out",
+                "appointment only",
+                "late-night unavailable"
+              ],
+              "style_strength": "strong",
+              "aspect_ratio": "1:1",
+              "image_size": "1024x1024",
+              "seed": "",
+              "guidance": "Emphasize reflective-lens detail and visible eyes; ensure phone booking UI reads 'Book VIP Try‑On Now' with an 'After-Hours' microcopy. Keep scene editorial and tidy—no price tags or clutter. Prioritize immediacy, exclusivity, and photographic readiness."
+            }
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Do the Polling": {
+      "main": [
+        [
+          {
+            "node": "Is it ready?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is it ready?": {
+      "main": [
+        [
+          {
+            "node": "Get Result1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Do the Polling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start FLUX Generation Job": {
+      "main": [
+        [
+          {
+            "node": "Do the Polling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Start FLUX Generation Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Result1": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Start FLUX Generation Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "44eea006-968a-47d4-839e-681c82b332c2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5a15598c4f70350a1350177d0fd97851d36eed95d8f2203733d7cde20d36947b"
+  },
+  "id": "jGY9YFTvFt5Hu1Z4",
+  "tags": []
+}

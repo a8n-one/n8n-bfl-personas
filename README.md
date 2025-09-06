@@ -86,11 +86,4 @@ Each persona includes:
 - PostgreSQL database
 - Telegram Bot API token
 
-## File Structure
-
-- `brief.json` - Campaign brief collection workflow
-- `persona-creative.json` - Persona generation and creative workflow
-- `img-gen.json` - Image generation sub-workflow
-- `README.md` - Project documentation
-
 This system demonstrates advanced workflow automation combining multiple AI services to create a complete marketing automation pipeline.
